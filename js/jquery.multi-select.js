@@ -20,7 +20,6 @@
   var MultiSelect = function (element, options) {
     this.options = options;
     this.$element = $(element);
-
     this.$container = $('<div/>', { 'class': "ms-container" });
     this.$selectableContainer = $('<div/>', { 'class': 'ms-selectable' });
     this.$selectionContainer = $('<div/>', { 'class': 'ms-selection' });
@@ -106,12 +105,20 @@
       for (var cpt = 0; cpt < option.attributes.length; cpt++){
         var attr = option.attributes[cpt];
 
-        if(attr.name !== 'value' && attr.name !== 'disabled'){
+        if(attr.name !== 'value' && attr.name !== 'disabled' && attr.name != 'data-icon'){
           attributes += attr.name+'="'+attr.value+'" ';
         }
       }
-      var selectableLi = $('<li '+attributes+'><span>'+$option.text()+'</span></li>'),
-          selectedLi = selectableLi.clone(),
+
+      var selectableLi;
+      if(typeof(option.attributes['data-icon']) !== "undefined"){
+       var icon = option.attributes['data-icon'].nodeValue;
+        selectableLi =  $('<li '+attributes+'><i class="'+icon+'"></i><span> '+$option.text()+'</span></li>');
+      }else{
+        selectableLi = $('<li '+attributes+'><span>'+$option.text()+'</span></li>');
+      }
+
+      var selectedLi = selectableLi.clone(),
           value = $option.val(),
           elementId = that.sanitize(value, that.sanitizeRegexp);
 
@@ -460,6 +467,8 @@
       var $this = $(this),
           data = $this.data('multiselect'),
           options = $.extend({}, $.fn.multiSelect.defaults, $this.data(), typeof option === 'object' && option);
+          
+
 
       if (!data){ $this.data('multiselect', (data = new MultiSelect(this, options))); }
 
